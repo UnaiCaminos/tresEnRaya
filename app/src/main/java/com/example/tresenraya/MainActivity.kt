@@ -159,6 +159,28 @@ fun TicTacToeGame(
     }
 }
 
+fun makeMove(board: List<MutableList<String>>, row: Int, col: Int, player: String) {
+    board[row][col] = player
+}
+
+fun computerMove(board: List<MutableList<String>>, difficulty: String) {
+    when (difficulty) {
+        "Fácil" -> {
+            makeRandomMove(board)
+        }
+        "Medio" -> {
+            if (!blockPlayer(board, "X")) {
+                makeRandomMove(board)
+            }
+        }
+        "Difícil" -> {
+            if (!winOrBlock(board, "O") && !winOrBlock(board, "X")) {
+                makeStrategicMove(board)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TicTacToePreview() {

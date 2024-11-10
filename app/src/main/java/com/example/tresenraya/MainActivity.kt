@@ -85,6 +85,80 @@ fun HomeScreen(
     }
 }
 
+@Composable
+fun TicTacToeGame(
+    isComputerOpponent: Boolean,
+    computerDifficulty: String, // Recibe la dificultad seleccionada
+    onGoBack: () -> Unit
+) {
+    var board by remember { mutableStateOf(List(3) { MutableList(3) { "" } }) }
+    var currentPlayer by remember { mutableStateOf("X") }
+    var winner by remember { mutableStateOf<String?>(null) }
+    var gameOver by remember { mutableStateOf(false) }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Button(onClick = onGoBack, modifier = Modifier.padding(8.dp)) {
+            Text("Volver a inicio")
+        }
+
+        if (winner != null || gameOver) {
+            Text(
+                text = winner?.let { "¡Ganador: $it!" } ?: "¡Empate!",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+            Button(onClick = {
+                board = List(3) { MutableList(3) { "" } }
+                winner = null
+                gameOver = false
+                currentPlayer = "X"
+            }) {
+                Text(text = "Reiniciar")
+            }
+        } else {
+            Text(
+                text = "Turno de $currentPlayer",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            // Tablero de 3x3
+            for (row in 0..2) {
+                Row {
+                    for (col in 0..2) {
+                        TicTacToeCell(
+                            value = board[row][col],
+                            onClick = {
+                                if (board[row][col] == "" && winner == null && currentPlayer == "X") {
+                                    makeMove(board, row, col, currentPlayer)
+                                    currentPlayer = "O"
+                                    winner = checkWinner(board)
+                                    if (winner == null && board.flatten().none { it == "" }) {
+                                        gameOver = true
+                                    } else if (isComputerOpponent && currentPlayer == "O" && winner == null) {
+                                        computerMove(board, computerDifficulty)
+                                        currentPlayer = "X"
+                                        winner = checkWinner(board)
+                                        if (winner == null && board.flatten().none { it == "" }) {
+                                            gameOver = true
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TicTacToePreview() {

@@ -181,6 +181,22 @@ fun computerMove(board: List<MutableList<String>>, difficulty: String) {
     }
 }
 
+// Realizar un movimiento aleatorio en cualquier casilla vacía
+fun makeRandomMove(board: List<MutableList<String>>) {
+    val emptyCells = board.flatMapIndexed { row, cols ->
+        cols.mapIndexedNotNull { col, value -> if (value == "") row to col else null }
+    }
+    if (emptyCells.isNotEmpty()) {
+        val (row, col) = emptyCells.random()
+        board[row][col] = "O"
+    }
+}
+
+// Bloquear al jugador si está a punto de ganar
+fun blockPlayer(board: List<MutableList<String>>, player: String): Boolean {
+    return winOrBlock(board, player)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TicTacToePreview() {

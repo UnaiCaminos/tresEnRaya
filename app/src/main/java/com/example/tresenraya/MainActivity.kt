@@ -58,6 +58,33 @@ fun TicTacToeApp(){
     }
 }
 
+@Composable
+fun HomeScreen(
+    onStartPlayerVsPlayer: () -> Unit,
+    onStartPlayerVsComputer: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text("Tic Tac Toe", fontSize = 36.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+
+        Button(onClick = onStartPlayerVsPlayer, modifier = Modifier.padding(8.dp)) {
+            Text("Jugar contra otro jugador")
+        }
+
+        Button(onClick = onStartPlayerVsComputer, modifier = Modifier.padding(8.dp)) {
+            Text("Jugar contra el ordenador")
+        }
+
+        Button(onClick = onOpenSettings, modifier = Modifier.padding(8.dp)) {
+            Text("Ajustes")
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TicTacToePreview() {

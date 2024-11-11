@@ -1,5 +1,6 @@
 package com.example.tresenraya
 
+import android.os.Bundle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -195,6 +196,134 @@ fun makeRandomMove(board: List<MutableList<String>>) {
 // Bloquear al jugador si está a punto de ganar
 fun blockPlayer(board: List<MutableList<String>>, player: String): Boolean {
     return winOrBlock(board, player)
+}
+
+// Intentar ganar si es posible, si no, bloquear al jugador
+fun winOrBlock(board: List<MutableList<String>>, player: String): Boolean {
+    for (i in 0..2) {
+        for (j in 0..2) {
+            if (board[i][j] == "") {
+                board[i][j] = player
+                if (checkWinner(board) == player) {
+                    if (player == "O") return true
+                    board[i][j] = "O"
+                    return true
+                }
+                board[i][j] = ""
+            }
+        }
+    }
+    return false
+}
+
+// Intentar un movimiento estratégico para la dificultad "Difícil"
+fun makeStrategicMove(board: List<MutableList<String>>) {
+    // Priorizar el centro, luego esquinas, luego bordes
+    val center = Pair(1, 1)
+    val corners = listOf(Pair(0, 0), Pair(0, 2), Pair(2, 0), Pair(2, 2))
+    val edges = listOf(Pair(0, 1), Pair(1, 0), Pair(1, 2), Pair(2, 1))
+
+    if (board[center.first][center.second] == "") {
+        board[center.first][center.second] = "O"
+    } else {
+        val availableCorner = corners.firstOrNull { board[it.first][it.second] == "" }
+        if (availableCorner != null) {
+            board[availableCorner.first][availableCorner.second] = "O"
+        } else {
+            val availableEdge = edges.firstOrNull { board[it.first][it.second] == "" }
+            if (availableEdge != null) {
+                board[availableEdge.first][availableEdge.second] = "O"
+            } else {
+                makeRandomMove(board)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SettingsScreen(
+    computerDifficulty: String,
+    onDifficultyChange: (String) -> Unit,
+    onGoBack: () -> Unit
+) {
+    val difficulties = listOf("Fácil", "Medio", "Difícil")
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text("Ajustes", fontSize = 32.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+
+        Text("Dificultad del ordenador:", fontSize = 20.sp, modifier = Modifier.padding(16.dp))
+
+        difficulties.forEach { difficulty ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .selectable(
+                        selected = (computerDifficulty == difficulty),
+                        onClick = { onDifficultyChange(difficulty) }
+                    )
+            ) {
+                RadioButton(
+                    selected = (computerDifficulty == difficulty),
+                    onClick = { onDifficultyChange(difficulty) }
+                )
+                Text(text = difficulty, fontSize = 18.sp)
+            }
+        }
+
+        Button(onClick = onGoBack, modifier = Modifier.padding(8.dp)) {
+            Text("Volver a inicio")
+        }
+    }
+}
+
+@Composable
+fun TicTacToeCell(value: String, onClick: () -> Unit) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(100.dp)
+            .padding(4.dp)
+            .background(Color.LightGray)
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = value,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+fun checkWinner(board: List<List<String>>): String? {
+    val winningCombinations = listOf(
+        listOf(Pair(0, 0), Pair(0, 1), Pair(0, 2)),
+        listOf(Pair(1, 0), Pair(1, 1), Pair(1, 2)),
+        listOf(Pair(2, 0), Pair(2, 1), Pair(2, 2)),
+        listOf(Pair(0, 0), Pair(1, 0), Pair(2, 0)),
+        listOf(Pair(0, 1), Pair(1, 1), Pair(2, 1)),
+        listOf(Pair(0, 2), Pair(1, 2), Pair(2, 2)),
+        listOf(Pair(0, 0), Pair(1, 1), Pair(2, 2)),
+        listOf(Pair(0, 2), Pair(1, 1), Pair(2, 0))
+    )
+
+    for (combination in winningCombinations) {
+        val (a, b, c) = combination
+        if (board[a.first][a.second] == board[b.first][b.second] &&
+            board[a.first][a.second] == board[c.first][c.second] &&
+            board[a.first][a.second].isNotEmpty()
+        ) {
+            return board[a.first][a.second]
+        }
+    }
+    return null
 }
 
 @Preview(showBackground = true)

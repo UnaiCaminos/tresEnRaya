@@ -70,7 +70,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Text("Tic Tac Toe", fontSize = 36.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+        Text("Tres en Raya", fontSize = 36.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
 
         Button(onClick = onStartPlayerVsPlayer, modifier = Modifier.padding(8.dp)) {
             Text("Jugar contra otro jugador")

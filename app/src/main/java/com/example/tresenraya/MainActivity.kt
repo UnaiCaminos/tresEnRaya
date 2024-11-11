@@ -136,18 +136,24 @@ fun TicTacToeGame(
                         TicTacToeCell(
                             value = board[row][col],
                             onClick = {
-                                if (board[row][col] == "" && winner == null && currentPlayer == "X") {
+                                if (board[row][col] == "" && winner == null) {
                                     makeMove(board, row, col, currentPlayer)
-                                    currentPlayer = "O"
                                     winner = checkWinner(board)
                                     if (winner == null && board.flatten().none { it == "" }) {
                                         gameOver = true
-                                    } else if (isComputerOpponent && currentPlayer == "O" && winner == null) {
-                                        computerMove(board, computerDifficulty)
-                                        currentPlayer = "X"
-                                        winner = checkWinner(board)
-                                        if (winner == null && board.flatten().none { it == "" }) {
-                                            gameOver = true
+                                    } else {
+                                        // Cambia de turno al siguiente jugador
+                                        currentPlayer = if (currentPlayer == "X") "O" else "X"
+
+                                        // Movimiento del ordenador
+                                        if (isComputerOpponent && currentPlayer == "O" && winner == null) {
+                                            computerMove(board, computerDifficulty)
+                                            winner = checkWinner(board)
+                                            if (winner == null && board.flatten().none { it == "" }) {
+                                                gameOver = true
+                                            } else {
+                                                currentPlayer = "X" // Cambia el turno de vuelta al jugador
+                                            }
                                         }
                                     }
                                 }
@@ -159,6 +165,7 @@ fun TicTacToeGame(
         }
     }
 }
+
 
 fun makeMove(board: List<MutableList<String>>, row: Int, col: Int, player: String) {
     board[row][col] = player
